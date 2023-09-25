@@ -1,7 +1,7 @@
 # This code is from the paper:
 # Berbeglia, G., Garassino, A., & Vulcano, G. (2018). A comparative empirical study of discrete choice models in retail operations. Available at SSRN 3136816.
 
-import ghalton
+#import ghalton
 from python_choice_models.models import Model
 from python_choice_models.optimization.non_linear import Constraints
 from python_choice_models.utils import generate_n_equal_numbers_that_sum_one, generate_n_random_numbers_that_sum_one, ZERO_LOWER_BOUND
@@ -42,7 +42,9 @@ class MixedLogitModel(Model):
         self.sigmas = sigmas
 
         self.NUMBER_SAMPLES = 1000
-        self.random_numbers = ghalton.Halton(len(self.products)).get(self.NUMBER_SAMPLES)
+
+        #self.random_numbers = ghalton.Halton(len(self.products)).get(self.NUMBER_SAMPLES)
+        self.random_numbers = scipy.stats.qmc.Halton(len(self.products)).random(self.NUMBER_SAMPLES)
         self.random_numbers = norm.ppf(self.random_numbers, loc=0.0, scale=1.0)
 
     def probability_of(self, transaction):
