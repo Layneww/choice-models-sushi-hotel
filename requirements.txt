@@ -9,4 +9,4 @@ numpy>=1.20.1
 numba>=0.50.1
 cplex>=22.1.0.0     # Just for Ranked List
 scipy>=1.10.1
-matplotlib>=3.7.3   # Just for plots
+matplotlib>=3.7.1   # Just for plots
