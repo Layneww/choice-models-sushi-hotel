@@ -74,8 +74,8 @@ class ScipySolver(NonLinearSolver):
         try:
             if solver=='BFGS':
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
-                         jac=False, bounds=bounds, callback=iteration_callback,
-                         method='BFGS', options={'maxiter': 100000})
+                         jac=False, callback=iteration_callback,
+                         method='BFGS')
             else:
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, bounds=bounds, constraints=constraints, callback=iteration_callback,
