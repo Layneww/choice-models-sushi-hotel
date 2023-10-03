@@ -75,7 +75,7 @@ class ScipySolver(NonLinearSolver):
             if solver=='BFGS':
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, callback=iteration_callback,
-                         method='BFGS')
+                         method='BFGS', options={'maxiter': 100})
             else:
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, bounds=bounds, constraints=constraints, callback=iteration_callback,
@@ -92,7 +92,8 @@ class ScipySolver(NonLinearSolver):
         profiler.stop_iteration(fun)
 
         if not success:
-            raise FailToOptimize(reason='Falla al optimizar. Estado de terminacion de scipy %s. %s' % (status, message))
+            print(status, message)
+            raise FailToOptimize(reason='Fail to optimize. Termination for scipy %s. %s' % (status, message))
 
         return x
 
