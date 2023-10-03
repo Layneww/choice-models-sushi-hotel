@@ -13,7 +13,7 @@ class NonLinearSolver(object):
     def default(cls):
         return ScipySolver()
 
-    def solve(self, non_linear_problem, profiler):
+    def solve(self, non_linear_problem, profiler, solver='SLSQP'):
         raise NotImplemented('Subclass responsibility')
 
     def cpu_time(self, profiler):
@@ -56,7 +56,7 @@ class ScipySolver(NonLinearSolver):
 
         return constraints
 
-    def solve(self, non_linear_problem, profiler, no_constraint=False):
+    def solve(self, non_linear_problem, profiler, solver='SLSQP'):
         time_limit = self.cpu_time(profiler)
         start_time = time.time()
 
@@ -72,7 +72,7 @@ class ScipySolver(NonLinearSolver):
 
         profiler.start_iteration()
         try:
-            if no_constraint:
+            if solver=='BFGS':
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, bounds=bounds, callback=iteration_callback,
                          method='BFGS', options={'maxiter': 100000})
