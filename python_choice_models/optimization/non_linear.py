@@ -82,17 +82,21 @@ class ScipySolver(NonLinearSolver):
             if solver=='BFGS':
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, callback=iteration_callback,
-                         method='BFGS', options={'maxiter': maxIter+1})
+                         method='BFGS', options={'maxiter': 100000})
             else:
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, bounds=bounds, constraints=constraints, callback=iteration_callback,
-                         method='SLSQP', options={'maxiter': maxIter+1})
+                         method='SLSQP', options={'maxiter': 100000})
             fun = r.fun
             x = r.x
             success = r.success
             status = r.status
             message = r.message
         except TookTooLong as e:
+            fun = e.objective_value
+            x = e.parameters
+            success = True
+        except ReachMaxIter as e:
             fun = e.objective_value
             x = e.parameters
             success = True
