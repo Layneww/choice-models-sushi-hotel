@@ -85,8 +85,6 @@ class ScipySolver(NonLinearSolver):
             success = r.success
             status = r.status
             message = r.message
-            if status==9:
-                success=True
             
         except TookTooLong as e:
             fun = e.objective_value
