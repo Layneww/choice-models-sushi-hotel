@@ -26,7 +26,10 @@ class TookTooLong(Exception):
     def __init__(self, objective_value, parameters):
         self.objective_value = objective_value
         self.parameters = parameters
-
+class ReachMaxIter(Exception):
+    def __init__(self, objective_value, parameters):
+        self.objective_value = objective_value
+        self.parameters = parameters
 
 class FailToOptimize(Exception):
     def __init__(self, reason):
@@ -59,13 +62,17 @@ class ScipySolver(NonLinearSolver):
     def solve(self, non_linear_problem, profiler, solver='SLSQP', maxIter=100000):
         time_limit = self.cpu_time(profiler)
         start_time = time.time()
+        count = 0
 
         def iteration_callback(x):
             objective = non_linear_problem.objective_function(x)
             profiler.stop_iteration(objective)
             profiler.start_iteration()
+            count+=1
             if time.time() - start_time > time_limit:
                 raise TookTooLong(objective, x)
+            if count>maxIter:
+                raise ReachMaxIter(objective, x)
 
         bounds = self.bounds_for(non_linear_problem)
         constraints = self.constraints_for(non_linear_problem)
