@@ -13,7 +13,7 @@ class NonLinearSolver(object):
     def default(cls):
         return ScipySolver()
 
-    def solve(self, non_linear_problem, profiler, solver='SLSQP'):
+    def solve(self, non_linear_problem, profiler, solver='SLSQP', maxIter=100000):
         raise NotImplemented('Subclass responsibility')
 
     def cpu_time(self, profiler):
