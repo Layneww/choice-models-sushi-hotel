@@ -85,6 +85,8 @@ class ScipySolver(NonLinearSolver):
             success = r.success
             status = r.status
             message = r.message
+            if status==9:
+                success=True
             
         except TookTooLong as e:
             fun = e.objective_value
@@ -94,10 +96,7 @@ class ScipySolver(NonLinearSolver):
         profiler.stop_iteration(fun)
 
         if not success:
-            if status==9:
-                print('reach max iter')
-            else:
-                raise FailToOptimize(reason='Fail to optimize. Termination for scipy %s. %s' % (status, message))
+            raise FailToOptimize(reason='Fail to optimize. Termination for scipy %s. %s' % (status, message))
 
         return x
 
