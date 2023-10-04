@@ -108,8 +108,11 @@ class ScipySolver(NonLinearSolver):
         profiler.stop_iteration(fun)
 
         if not success:
-            print(status, message)
-            raise FailToOptimize(reason='Fail to optimize. Termination for scipy %s. %s' % (status, message))
+            if status==9:
+                success=True
+
+            else:
+                raise FailToOptimize(reason='Fail to optimize. Termination for scipy %s. %s' % (status, message))
 
         return x
 
