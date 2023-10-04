@@ -71,7 +71,7 @@ class ScipySolver(NonLinearSolver):
             count+=1
             if time.time() - start_time > time_limit:
                 raise TookTooLong(objective, x)
-            if count>maxIter:
+            if count>=maxIter:
                 raise ReachMaxIter(objective, x)
 
         bounds = self.bounds_for(non_linear_problem)
@@ -82,11 +82,11 @@ class ScipySolver(NonLinearSolver):
             if solver=='BFGS':
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, callback=iteration_callback,
-                         method='BFGS', options={'maxiter': 10})
+                         method='BFGS', options={'maxiter': maxIter+1})
             else:
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, bounds=bounds, constraints=constraints, callback=iteration_callback,
-                         method='SLSQP', options={'maxiter': maxIter})
+                         method='SLSQP', options={'maxiter': maxIter+1})
             fun = r.fun
             x = r.x
             success = r.success
