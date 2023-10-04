@@ -27,10 +27,6 @@ class TookTooLong(Exception):
         self.objective_value = objective_value
         self.parameters = parameters
         
-# class ReachMaxIter(Exception):
-#     def __init__(self, objective_value, parameters):
-#         self.objective_value = objective_value
-#         self.parameters = parameters
 
 class FailToOptimize(Exception):
     def __init__(self, reason):
@@ -63,18 +59,13 @@ class ScipySolver(NonLinearSolver):
     def solve(self, non_linear_problem, profiler, solver='SLSQP', maxIter=100000):
         time_limit = self.cpu_time(profiler)
         start_time = time.time()
-        count = 0
 
         def iteration_callback(x):
             objective = non_linear_problem.objective_function(x)
             profiler.stop_iteration(objective)
             profiler.start_iteration()
-            count+=1
-            print(count)
-            if time.time() - start_time > time_limit or count>=maxIter:
+            if time.time() - start_time > time_limit:
                 raise TookTooLong(objective, x)
-            # elif count>=maxIter:
-            #     raise ReachMaxIter(objective, x)
 
         bounds = self.bounds_for(non_linear_problem)
         constraints = self.constraints_for(non_linear_problem)
@@ -84,21 +75,16 @@ class ScipySolver(NonLinearSolver):
             if solver=='BFGS':
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, callback=iteration_callback,
-                         method='BFGS', options={'maxiter': 100000})
+                         method='BFGS', options={'maxiter': maxIter})
             else:
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, bounds=bounds, constraints=constraints, callback=iteration_callback,
-                         method='SLSQP', options={'maxiter': 100000})
+                         method='SLSQP', options={'maxiter': maxIter})
             fun = r.fun
             x = r.x
             success = r.success
             status = r.status
             message = r.message
-
-        # except ReachMaxIter as e:
-        #     fun = e.objective_value
-        #     x = e.parameters
-        #     success = True
             
         except TookTooLong as e:
             fun = e.objective_value
@@ -109,8 +95,7 @@ class ScipySolver(NonLinearSolver):
 
         if not success:
             if status==9:
-                success=True
-
+                print('reach max iter')
             else:
                 raise FailToOptimize(reason='Fail to optimize. Termination for scipy %s. %s' % (status, message))
 
