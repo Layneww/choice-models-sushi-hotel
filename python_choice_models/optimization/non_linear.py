@@ -26,7 +26,7 @@ class TookTooLong(Exception):
     def __init__(self, objective_value, parameters):
         self.objective_value = objective_value
         self.parameters = parameters
-        
+
 
 class FailToOptimize(Exception):
     def __init__(self, reason):
@@ -75,7 +75,7 @@ class ScipySolver(NonLinearSolver):
             if solver=='BFGS':
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, callback=iteration_callback,
-                         method='BFGS', options={'maxiter': maxIter})
+                         method='BFGS', options={'maxiter': 2})
             else:
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, bounds=bounds, constraints=constraints, callback=iteration_callback,
@@ -85,15 +85,14 @@ class ScipySolver(NonLinearSolver):
             success = r.success
             status = r.status
             message = r.message
-            
         except TookTooLong as e:
             fun = e.objective_value
             x = e.parameters
             success = True
-        
         profiler.stop_iteration(fun)
 
         if not success:
+            print(status, message)
             raise FailToOptimize(reason='Fail to optimize. Termination for scipy %s. %s' % (status, message))
 
         return x
