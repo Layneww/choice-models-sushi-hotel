@@ -27,10 +27,10 @@ class TookTooLong(Exception):
         self.objective_value = objective_value
         self.parameters = parameters
         
-class ReachMaxIter(Exception):
-    def __init__(self, objective_value, parameters):
-        self.objective_value = objective_value
-        self.parameters = parameters
+# class ReachMaxIter(Exception):
+#     def __init__(self, objective_value, parameters):
+#         self.objective_value = objective_value
+#         self.parameters = parameters
 
 class FailToOptimize(Exception):
     def __init__(self, reason):
@@ -70,10 +70,11 @@ class ScipySolver(NonLinearSolver):
             profiler.stop_iteration(objective)
             profiler.start_iteration()
             count+=1
-            if time.time() - start_time > time_limit:
+            print(count)
+            if time.time() - start_time > time_limit or count>=maxIter:
                 raise TookTooLong(objective, x)
-            elif count>=maxIter:
-                raise ReachMaxIter(objective, x)
+            # elif count>=maxIter:
+            #     raise ReachMaxIter(objective, x)
 
         bounds = self.bounds_for(non_linear_problem)
         constraints = self.constraints_for(non_linear_problem)
@@ -94,10 +95,10 @@ class ScipySolver(NonLinearSolver):
             status = r.status
             message = r.message
 
-        except ReachMaxIter as e:
-            fun = e.objective_value
-            x = e.parameters
-            success = True
+        # except ReachMaxIter as e:
+        #     fun = e.objective_value
+        #     x = e.parameters
+        #     success = True
             
         except TookTooLong as e:
             fun = e.objective_value
