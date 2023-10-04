@@ -56,7 +56,7 @@ class ScipySolver(NonLinearSolver):
 
         return constraints
 
-    def solve(self, non_linear_problem, profiler, solver='SLSQP'):
+    def solve(self, non_linear_problem, profiler, solver='SLSQP', maxIter=100000):
         time_limit = self.cpu_time(profiler)
         start_time = time.time()
 
@@ -75,11 +75,11 @@ class ScipySolver(NonLinearSolver):
             if solver=='BFGS':
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, callback=iteration_callback,
-                         method='BFGS', options={'maxiter': 2})
+                         method='BFGS', options={'maxiter': 10})
             else:
                 r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
                          jac=False, bounds=bounds, constraints=constraints, callback=iteration_callback,
-                         method='SLSQP', options={'maxiter': 100000})
+                         method='SLSQP', options={'maxiter': maxIter})
             fun = r.fun
             x = r.x
             success = r.success
