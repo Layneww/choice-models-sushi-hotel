@@ -26,6 +26,7 @@ class TookTooLong(Exception):
     def __init__(self, objective_value, parameters):
         self.objective_value = objective_value
         self.parameters = parameters
+        
 class ReachMaxIter(Exception):
     def __init__(self, objective_value, parameters):
         self.objective_value = objective_value
@@ -71,7 +72,7 @@ class ScipySolver(NonLinearSolver):
             count+=1
             if time.time() - start_time > time_limit:
                 raise TookTooLong(objective, x)
-            if count>=maxIter:
+            elif count>=maxIter:
                 raise ReachMaxIter(objective, x)
 
         bounds = self.bounds_for(non_linear_problem)
@@ -92,14 +93,17 @@ class ScipySolver(NonLinearSolver):
             success = r.success
             status = r.status
             message = r.message
-        except TookTooLong as e:
-            fun = e.objective_value
-            x = e.parameters
-            success = True
+
         except ReachMaxIter as e:
             fun = e.objective_value
             x = e.parameters
             success = True
+            
+        except TookTooLong as e:
+            fun = e.objective_value
+            x = e.parameters
+            success = True
+        
         profiler.stop_iteration(fun)
 
         if not success:
