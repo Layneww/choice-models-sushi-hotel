@@ -74,20 +74,24 @@ class ScipySolver(NonLinearSolver):
         constraints = self.constraints_for(non_linear_problem)
 
         profiler.start_iteration()
+        
         try:
-            if solver=='BFGS':
-                r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
-                         jac=False, callback=iteration_callback,
-                         method='BFGS', options={'maxiter': maxIter})
-            else:
-                r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
-                         jac=False, bounds=bounds, constraints=constraints, callback=iteration_callback,
-                         method='SLSQP', options={'maxiter': maxIter})
-            fun = r.fun
-            x = r.x
-            success = r.success
-            status = r.status
-            message = r.message
+            while True:
+                if solver=='BFGS':
+                    r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
+                             jac=False, callback=iteration_callback,
+                             method='BFGS', options={'maxiter': maxIter})
+                else:
+                    r = minimize(fun=non_linear_problem.objective_function, x0=array(non_linear_problem.initial_solution()),
+                             jac=False, bounds=bounds, constraints=constraints, callback=iteration_callback,
+                             method='SLSQP', options={'maxiter': maxIter})
+                fun = r.fun
+                x = r.x
+                success = r.success
+                status = r.status
+                message = r.message
+                if success:
+                    break
         except TookTooLong as e:
             fun = e.objective_value
             x = e.parameters
