@@ -59,7 +59,7 @@ class ScipySolver(NonLinearSolver):
     def solve(self, non_linear_problem, profiler, solver='SLSQP', maxIter=100000):
         time_limit = self.cpu_time(profiler)
         if solver=='BFGS':
-            time_limit=0.1
+            time_limit=15
         start_time = time.time()
         
 
@@ -98,7 +98,7 @@ class ScipySolver(NonLinearSolver):
 
         if not success:
             print(status, message)
-            x = 'fail'
+            x = None
             # raise FailToOptimize(reason='Fail to optimize. Termination for scipy %s. %s' % (status, message))
 
         return x
