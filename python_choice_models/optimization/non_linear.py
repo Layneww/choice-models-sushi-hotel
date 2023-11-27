@@ -59,7 +59,7 @@ class ScipySolver(NonLinearSolver):
     def solve(self, non_linear_problem, profiler, solver='SLSQP', maxIter=100000):
         time_limit = self.cpu_time(profiler)
         if solver=='BFGS':
-            time_limit=15
+            time_limit=5
         start_time = time.time()
         
 
